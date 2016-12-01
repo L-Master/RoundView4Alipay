@@ -108,7 +108,9 @@ public class RoundView4AlipayView extends View {
         canvas.translate(getWidth()/2,getHeight()/2);//移动画布原点到中心位置。
 
         drawRound(canvas);//画内外圆
-        drawScale(canvas);
+        drawScale(canvas); //画刻度。
+        //画文字
+
 
         //回收资源
         canvas.restore();
@@ -116,7 +118,7 @@ public class RoundView4AlipayView extends View {
     }
 
     private void drawScale(Canvas canvas) {
-        //1.一共画30个刻度，计算出每个刻度的间隔。
+       /* //1.一共画30个刻度，计算出每个刻度的间隔。
         int angle = mSweepAngle/30;
         //2.旋转到起始点。
         canvas.rotate(-270+mStartAngle); //将起始刻度点旋转到正上方（270)
@@ -143,7 +145,24 @@ public class RoundView4AlipayView extends View {
             canvas.rotate(angle); //4.逆时针旋转一下。继续画。
         }
         //4.画完后旋转会原来的样子。
-        canvas.restore();
+        canvas.restore();*/
+        int angle = mSweepAngle/30;//每个小格子的角度
+        //将画布旋转到顶部开始画
+        canvas.rotate(-270+mStartAngle);
+        //画30个刻度，
+        for (int i =0 ;i <=30;i++){
+
+            if (i%6 == 0){
+                //画粗刻度
+
+            }else{
+                //画细刻度
+            }
+
+            if (i == 3 || i == 9 || i == 15 || i == 21 || i == 27){
+                //画文字
+            }
+        }
 
     }
 
@@ -170,15 +189,17 @@ public class RoundView4AlipayView extends View {
     private void drawRound(Canvas canvas) {
         canvas.save();
         //内圆
-        mPaint.setAlpha(0x40);
-        mPaint.setStrokeWidth(mSweepInWidth);
-        //RectF rectF3 = new RectF(-radius, -radius, radius, radius);
-        //canvas.drawRect(rectF3,mPaint);
+        mPaint.setAlpha(0x40);//设置透明度
+        mPaint.setStrokeWidth(mSweepInWidth);//设置线宽
+        RectF rectF3 = new RectF(-radius, -radius, radius, radius);
+        canvas.drawRect(rectF3,mPaint);
         RectF rectf = new RectF(-radius,-radius,radius,radius);
         canvas.drawArc(rectf,mStartAngle,mSweepAngle,false,mPaint);
         //外圆
-        mPaint.setStrokeWidth(mSweepOutwidth);
-        int w = dp2px(10);
+        mPaint.setStrokeWidth(mSweepOutwidth);//设置线宽
+        int w = dp2px(10);//外圆的扩大值。
+        RectF rectF4 = new RectF(-radius-w , -radius-w , radius+w , radius+w);
+        canvas.drawRect(rectF4,mPaint);
         RectF rectf2 = new RectF(-radius-w , -radius-w , radius+w , radius+w);
         canvas.drawArc(rectf2,mStartAngle,mSweepAngle,false,mPaint);
         canvas.restore();
