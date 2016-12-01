@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="RoundView4Alipay">
+        <!--最大数值-->
+        <attr name="maxNum" format="integer" />
+        <!--起始角度-->
+        <attr name="startAngle" format="integer" />
+        <!--扫过的角度-->
+        <attr name="sweepangle" format="integer" />
+    </declare-styleable>
+</resources>
