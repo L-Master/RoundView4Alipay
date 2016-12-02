@@ -15,8 +15,8 @@ import android.view.View;
  */
 
 public class RoundView4AlipayView extends View {
-    private  Context mContext;
-    private int mMaxNum;
+    private Context mContext;
+    private float mMaxNum;
     private int mStartAngle;
     private int mSweepAngle;
     private int mSweepInWidth;
@@ -31,19 +31,20 @@ public class RoundView4AlipayView extends View {
     private int hMode;
     private int mWidth;
     private int mHeight;
-    private int radius;
-    private String[] text ={"较差","中等","良好","优秀","极好"};
+    private float radius;
+    private String[] text = {"较差", "中等", "良好", "优秀", "极好"};
+    private float angle;
 
     public RoundView4AlipayView(Context context) {
-        this(context,null);
+        this(context, null);
     }
 
     public RoundView4AlipayView(Context context, AttributeSet attrs) {
-        this(context, attrs,0);
+        this(context, attrs, 0);
 
     }
 
-//1,构造函数初始化attrs和画笔paint
+    //1,构造函数初始化attrs和画笔paint
     public RoundView4AlipayView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         setBackgroundColor(0xFFFF6347);
@@ -54,9 +55,9 @@ public class RoundView4AlipayView extends View {
 
     private void initAttrs(AttributeSet attrs) {
         TypedArray typedArray = mContext.obtainStyledAttributes(attrs, R.styleable.RoundView4Alipay);
-        mMaxNum = typedArray.getInt(R.styleable.RoundView4Alipay_maxNum, 500);
+        mMaxNum = (float) typedArray.getInt(R.styleable.RoundView4Alipay_maxNum, 500);
         mStartAngle = typedArray.getInt(R.styleable.RoundView4Alipay_startAngle, 160);
-        mSweepAngle = typedArray.getInt(R.styleable.RoundView4Alipay_sweepangle, 220);
+        mSweepAngle = typedArray.getInt(R.styleable.RoundView4Alipay_sweepangle, 222);
 
         //内外圆的宽度，
         mSweepInWidth = dp2px(8);
@@ -79,33 +80,34 @@ public class RoundView4AlipayView extends View {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         wSize = MeasureSpec.getSize(widthMeasureSpec);
         hSize = MeasureSpec.getSize(heightMeasureSpec);
         wMode = MeasureSpec.getMode(widthMeasureSpec);
         hMode = MeasureSpec.getMode(heightMeasureSpec);
 
-        if (wSize == MeasureSpec.EXACTLY){
+        if (wSize == MeasureSpec.EXACTLY) {
             mWidth = wSize;
-        }else{
+        } else {
             mWidth = dp2px(400);
         }
-         if (hSize == MeasureSpec.EXACTLY){
+        if (hSize == MeasureSpec.EXACTLY) {
             mHeight = hSize;
-        }else{
+        } else {
             mHeight = dp2px(300);
         }
-        setMeasuredDimension(mWidth,mHeight);
+        setMeasuredDimension(mWidth, mHeight);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        //初始化半径
-        radius = getMeasuredWidth() / 4;
-        Log.d("jiajia", "onDraw: "+getWidth()+"w===h"+getHeight()+"==="+radius);
         canvas.save();
-        canvas.translate(getWidth()/2,getHeight()/2);//移动画布原点到中心位置。
+        //初始化半径
+        radius = (float) getMeasuredWidth() / 4;
+        Log.d("jiajia", "onDraw: " + getWidth() + "w===h" + getHeight() + "===" + radius);
+        canvas.save();
+        canvas.translate(getWidth() / 2, getHeight() / 2);//移动画布原点到中心位置。
 
         drawRound(canvas);//画内外圆
         drawScale(canvas); //画刻度。
@@ -118,56 +120,87 @@ public class RoundView4AlipayView extends View {
     }
 
     private void drawScale(Canvas canvas) {
-       /* //1.一共画30个刻度，计算出每个刻度的间隔。
-        int angle = mSweepAngle/30;
-        //2.旋转到起始点。
-        canvas.rotate(-270+mStartAngle); //将起始刻度点旋转到正上方（270)
-        //3、循环30次画上30个刻度。
-        for (int i = 0; i <= 30; i++) {
-            //1、每6个刻度就画一个粗刻度
-            if(i%6 == 0){ //画粗刻度和刻度值
-                mPaint.setStrokeWidth(dp2px(2));//设置线宽
-                mPaint.setAlpha(0x70);
-                //画线
-                canvas.drawLine(0, -radius-mSweepOutwidth/2,0, -radius+mSweepInWidth/2+dp2px(1), mPaint);
-                //画线下文字
-                drawText(canvas,i*mMaxNum/30+"",mPaint);
-            }else {         //2.画细刻度
-                mPaint.setStrokeWidth(dp2px(1));
-                mPaint.setAlpha(0x50);
-                canvas.drawLine(0,-radius-mSweepOutwidth/2,0, -radius+mSweepInWidth/2, mPaint);
-            }
-            if(i==3 || i==9 || i==15 || i==21 || i==27){  //3.画刻度区间文字
-                mPaint.setStrokeWidth(dp2px(2));
-                mPaint.setAlpha(0x50);
-                drawText(canvas,text[(i-3)/6], mPaint);
-            }
-            canvas.rotate(angle); //4.逆时针旋转一下。继续画。
-        }
-        //4.画完后旋转会原来的样子。
-        canvas.restore();*/
-        int angle = mSweepAngle/30;//每个小格子的角度
+//        //1.一共画30个刻度，计算出每个刻度的间隔。
+//        float angle = (float) mSweepAngle / 30;
+//        //2.旋转到起始点。
+//        canvas.rotate(-270 + mStartAngle); //将起始刻度点旋转到正上方（270)
+//        //3、循环30次画上30个刻度。
+//        for (int i = 0; i <= 30; i++) {
+//            //1、每6个刻度就画一个粗刻度
+//            if(i%6 == 0){ //画粗刻度和刻度值
+//                mPaint.setStrokeWidth(dp2px(2));//设置线宽
+//                mPaint.setAlpha(0x70);
+//                if (i == 0 ){
+//                    //画线
+//                    canvas.drawLine(0+mPaint.getStrokeWidth()/2, -radius-mSweepOutwidth/2,0+mPaint.getStrokeWidth()/2, -radius+mSweepInWidth/2+dp2px(1), mPaint);
+//                }else {
+//                    //画线
+//                    canvas.drawLine(0, -radius-mSweepOutwidth/2,0, -radius+mSweepInWidth/2+dp2px(1), mPaint);
+//                }
+////                mPaint.setColor(0xffff0000);
+////                canvas.drawLine(0, 0,0, -radius, mPaint);
+////                mPaint.setColor(0xffffffff);
+////                Log.d("jiajia", "drawScale: "+(-radius-mSweepOutwidth/2)+(-radius+mSweepInWidth/2+dp2px(1)));
+//                //画线下文字
+//                drawText(canvas,i*mMaxNum/30+"",mPaint);
+//            }else {         //2.画细刻度
+//                mPaint.setStrokeWidth(dp2px(1));
+//                mPaint.setAlpha(0x50);
+//                canvas.drawLine(0,-radius-mSweepOutwidth/2,0, -radius+mSweepInWidth/2, mPaint);
+//            }
+//            if(i==3 || i==9 || i==15 || i==21 || i==27){  //3.画刻度区间文字
+//                mPaint.setStrokeWidth(dp2px(2));
+//                mPaint.setAlpha(0x50);
+//                drawText(canvas,text[(i-3)/6], mPaint);
+//            }
+//            canvas.rotate(angle); //4.逆时针旋转一下。继续画。
+//        }
+//        //4.画完后旋转会原来的样子。
+//        canvas.restore();
+        angle = (float) mSweepAngle / 30;//每个小格子的角度
         //将画布旋转到顶部开始画
-        canvas.rotate(-270+mStartAngle);
+        canvas.rotate(-270 + mStartAngle);
         //画30个刻度，
-        for (int i =0 ;i <=30;i++){
+        for (int i = 0; i <= 30; i++) {
 
-            if (i%6 == 0){
+            if (i % 6 == 0) {
                 //画粗刻度
+                mPaint.setAlpha(0x60);//设置透明度
+                mPaint.setStrokeWidth(dp2px(2));
 
-            }else{
+                testDrawDot(canvas,0,-radius);
+
+                canvas.drawLine(0,-radius-mSweepOutwidth/2,0,-radius+mSweepInWidth,mPaint);
+
+                drawText(canvas,350+(int)(i*mMaxNum/30)+"",mPaint);
+            } else {
                 //画细刻度
+                mPaint.setAlpha(0x40);//设置透明度
+                mPaint.setStrokeWidth(dp2px(1));
+                canvas.drawLine(0,-radius-mSweepOutwidth/2,0,-radius+mSweepInWidth/2,mPaint);
             }
 
-            if (i == 3 || i == 9 || i == 15 || i == 21 || i == 27){
+            if (i == 3 || i == 9 || i == 15 || i == 21 || i == 27) {
                 //画文字
+                mPaint.setStrokeWidth(dp2px(2));
+                mPaint.setAlpha(0x40);
+               drawText(canvas,text[(i-3)/6],mPaint);
             }
+            canvas.rotate(angle);
         }
 
     }
 
+    private void testDrawDot(Canvas canvas,float x,float y) {
+        mPaint.setColor(0x00000000);
+        canvas.drawLine(x,y,x,y+dp2px(1),mPaint);
+        mPaint.setColor(0xffffffff);
+    }
+
+
     /**
      * 画文字
+     *
      * @param canvas
      * @param text
      * @param paint
@@ -176,12 +209,12 @@ public class RoundView4AlipayView extends View {
 //        画笔类型
         paint.setStyle(Paint.Style.FILL);
 //        画笔大小
-        paint.setTextSize(sp2px(8));
+        paint.setTextSize(sp2px(10));
 
         float width = paint.measureText(text); //相比getTextBounds来说，这个方法获得的类型是float，更精确些
 //        Rect rect = new Rect();
 //        paint.getTextBounds(text,0,text.length(),rect);
-        canvas.drawText(text,-width/2 , -radius + dp2px(15),paint);
+        canvas.drawText(text, -width / 2, -radius + dp2px(25), paint);
         paint.setStyle(Paint.Style.STROKE);
 
     }
@@ -191,76 +224,34 @@ public class RoundView4AlipayView extends View {
         //内圆
         mPaint.setAlpha(0x40);//设置透明度
         mPaint.setStrokeWidth(mSweepInWidth);//设置线宽
-        RectF rectF3 = new RectF(-radius, -radius, radius, radius);
-        canvas.drawRect(rectF3,mPaint);
-        RectF rectf = new RectF(-radius,-radius,radius,radius);
-        canvas.drawArc(rectf,mStartAngle,mSweepAngle,false,mPaint);
+//        RectF rectF3 = new RectF(-radius, -radius, radius, radius);
+//        canvas.drawRect(rectF3,mPaint);
+        RectF rectf = new RectF(-radius, -radius, radius, radius);
+        canvas.drawArc(rectf, mStartAngle, mSweepAngle, false, mPaint);
         //外圆
         mPaint.setStrokeWidth(mSweepOutwidth);//设置线宽
         int w = dp2px(10);//外圆的扩大值。
-        RectF rectF4 = new RectF(-radius-w , -radius-w , radius+w , radius+w);
-        canvas.drawRect(rectF4,mPaint);
-        RectF rectf2 = new RectF(-radius-w , -radius-w , radius+w , radius+w);
-        canvas.drawArc(rectf2,mStartAngle,mSweepAngle,false,mPaint);
+//        RectF rectF4 = new RectF(-radius-w , -radius-w , radius+w , radius+w);
+//        canvas.drawRect(rectF4,mPaint);
+        RectF rectf2 = new RectF(-radius - w, -radius - w, radius + w, radius + w);
+        canvas.drawArc(rectf2, mStartAngle, mSweepAngle, false, mPaint);
         canvas.restore();
     }
 
 
-
     /**
-     *
      * 将dp转成px的util方法
+     *
      * @param dp
      * @return
      */
     public int dp2px(int dp) {
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,dp, getResources().getDisplayMetrics());
-    }
-    public  int  sp2px(int sp){
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,sp,getResources().getDisplayMetrics());
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, getResources().getDisplayMetrics());
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    public int sp2px(int sp) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, getResources().getDisplayMetrics());
+    }
 
 
 }
